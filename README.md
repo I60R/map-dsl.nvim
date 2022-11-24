@@ -48,9 +48,9 @@ map:register {}
 Via [packer.nvim](https://github.com/wbthomason/packer.nvim):
 
 ```lua
--- This must be at the top of your plugin declarations
 use {
     'I60R/map-dsl.nvim',
+    as = 'map',
     requires = 'folke/which-key.nvim',
     config = function()
         local map_dsl = require('map-dsl')
@@ -59,17 +59,14 @@ use {
     end
 }
 
--- This must come next after map-dsl declaration
-_G.use = function(spec)
-    if type(spec.after) == 'string' then
-        spec.after = { spec.after, }
+use {
+    'a/plugin',
+    requires = 'map', -- this is mandatory
+    config = function()
+        -- define keymappings here
     end
-    spec.after[#spec.after+1] = "map-dsl.nvim"
-end
+}
 
--- Put the rest of your plugins here.
--- They'll use redefined `use` function
--- which loads map-dsl before each plugin.
 ```
 
 
