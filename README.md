@@ -61,7 +61,7 @@ use {
 
 use {
     'a/plugin',
-    requires = 'map', -- this is mandatory
+    after = 'map', -- this is mandatory
     config = function()
         -- define keymappings here
     end
