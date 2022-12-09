@@ -96,6 +96,28 @@ local function map_with_modifiers(modifiers_list, next_possible_modifiers_list)
     return setmetatable({}, MapModifier)
 end
 
+
+-- Enables `map.leader` modifier which could be extended
+-- as `map.leader.ctrl`, `map.leader.ctrl.alt`, `map.leader.ctrl.shift`
+-- and `map.leader.ctrl.alt.shift`
+MapIndex.leader = map_with_modifiers({ "leader" }, {
+    -- `map.leader.ctrl.alt` extension
+    ctrl = map_with_modifiers({ "leader", "ctrl" }, {
+        -- `map.leader.ctrl.alt` extension
+        alt = map_with_modifiers({ "leader", "ctrl", "alt" }, {
+            -- `map.leader.ctrl.alt.shift` extension
+            shift = map_with_modifiers { "leader", "ctrl", "alt", "shift" },
+        }),
+        -- `map.leader.ctrl.shift` extension
+        shift = map_with_modifiers { "leader", "ctrl", "shift" },
+    }),
+    -- `map.leader.alt` extension
+    alt = map_with_modifiers { "leader", "alt" },
+    -- `map.leader.shift` extension
+    shift = map_with_modifiers { "leader", "shift" },
+})
+
+
 -- Enables `map.ctrl` modifier which could be extended
 -- as `map.ctrl.alt`, `map.ctrl.shift` and `map.ctrl.alt.shift`
 MapIndex.ctrl = map_with_modifiers({ "ctrl" }, {
@@ -118,8 +140,6 @@ MapIndex.alt = map_with_modifiers({ "alt" }, {
 -- Enables `map.shift` modifier which cannot be extended,
 -- use `map.ctrl` and `map.alt` instead
 MapIndex.shift = map_with_modifiers { "shift" }
-
-
 
 
 -- Common function for `MapIndex.split` and `MapIndex.register`
@@ -265,6 +285,9 @@ MapIndex.register = function(self, extra_arguments)
                     key = '<M-' .. key .. '>'
                 elseif modifiers.shift then
                     key = '<S-' .. key .. '>'
+                end
+                if modifiers.leader then
+                    key = "<Leader>" .. key
                 end
             end
 
