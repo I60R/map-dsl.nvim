@@ -25,6 +25,7 @@ Map.__newindex = function(self, key, mapping_arguments)
         }
     end
 
+    -- See Map.__call
     if self.description ~= nil then
         mapping_arguments[2] = self.description
         self.description = nil
@@ -56,8 +57,8 @@ end
 
 --- Next enables `split` and `register` methods on keymaps
 --- table that allows to batch-operate on its contents.
---- Also provides Ctrl, Alt, Shift modifier keymaps that could
---- be used instead of <C-..>, <M-..>, <S-..>
+--- Also provides Leader, Ctrl, Alt, Shift modifier keymaps that
+--- could be used instead of <Leader-..>, <C-..>, <M-..>, <S-..>
 local MapIndex = {}
 Map.__index = MapIndex
 
@@ -76,12 +77,13 @@ local function map_with_modifiers(modifiers_list, next_possible_modifiers_list)
         key = tostring(key)
 
         if type(mapping_arguments) ~= 'table' then
-            -- It can be function or a string
+            -- It also can be function or a string
             mapping_arguments = {
                 mapping_arguments,
             }
         end
 
+        -- Allows to pass map.key = { 'xxx', mod = 'ctrl' }
         if mapping_arguments.mod ~= nil then
             for i, modifier in ipairs(modifiers_list) do
                 mapping_arguments.mod[#mapping_arguments.mod + i] = modifier
@@ -142,6 +144,7 @@ MapIndex.alt = map_with_modifiers({ "alt" }, {
 MapIndex.shift = map_with_modifiers { "shift" }
 
 
+
 -- Common function for `MapIndex.split` and `MapIndex.register`
 local function override_arguments(key_arguments_tuple, extra_arguments, for_each_hook)
     local key, mapping_arguments = next(key_arguments_tuple)
@@ -150,7 +153,7 @@ local function override_arguments(key_arguments_tuple, extra_arguments, for_each
             -- append extra modes instead of overriding them
             if arg == "modes" and mapping_arguments.modes then
                 mapping_arguments.modes = mapping_arguments.modes .. value
-                break
+                break -- but continue for loop
             end
 
             -- override arguments otherwise

@@ -1,11 +1,55 @@
 # A neat DSL for creating keymappings in neovim
 
-Examples of usage:
+
+## Structure
 
 ```lua
-(map "Unmap space")
+;(map "Mapping description for which-key")
+    ['Keys'] = 'OtherKey'
+
+;(map "Modifiers also supported")
+    .leader.ctrl.alt.shift['Keys'] = 'OtherKey'
+
+;(map "Table on RHS support")
+    ['Keys'] = { 'Command', remap = true, silent = true, as = 'cmd' }
+
+;(map "Lua function on RHS (also could be used in table as above)")
+    ['Keys'] = function() x() end
+
+map:split { remap = false } -- modify all above mappings
+
+;(map "Plug mappings")
+    ['Keys'] = { plug = "argument" }
+
+;(map "Lua expression")
+    ['Keys'] = { "print('hello')", as = 'lua' }
+
+;(map "Call expression")
+    ['Keys'] = { "expand('<cword>')", as = 'call' }
+
+map:split { silent = false } -- modify all mappings after previous split
+
+;(map "Single mode")
+    ['Keys'] = { "OtherKey", mode = 'n' }
+
+;(map "Multiple modes")
+    ['Keys'] = { "OtherKey", modes = 'niv' }
+
+-- This call is mandatory, otherwise mappings wouldn't be registered
+map:register {
+    mode = 'x', -- you can also modify mappings as with split
+    each = function(key, rhs) -- and even with function!
+        rhs.silent = true
+    end
+}
+```
+
+## Examples of usage
+
+```lua
+;(map "Unmap space")
     ['<Space>'] = '<Nop>'
-(map "Space is the leader key!")
+;(map "Space is the leader key!")
     ['<Space>'] = '<Leader>'
 
 map:register { remap = true }
@@ -14,30 +58,30 @@ map:register { remap = true }
 ```lua
 for n = 1, 9 do
     local function focus_nth_buffer() require('bufferline').go_to_buffer(n) end
-    (map "Go to (" .. n .. ") buffer")
+    ;(map "Go to (" .. n .. ") buffer")
         .alt[n] = { focus_nth_buffer, remap = false, silent = true };
 end
 
-(map "Pick a buffer")
+;(map "Pick a buffer")
     .alt['`'] = 'BufferLinePick'
-(map "Previous buffer")
+;(map "Previous buffer")
     .alt['Left'] = 'BufferLineCyclePrev'
-(map "Next buffer")
+;(map "Next buffer")
     .alt['Right'] = 'BufferLineCycleNext'
-(map "Close buffer")
+;(map "Close buffer")
     .alt['q'] = 'b # | bd #'
-(map "Previous buffer")
+;(map "Previous buffer")
     ['<F13>'] = 'BufferLineCyclePrev'
-(map "Next buffer")
+;(map "Next buffer")
     ['<F14>'] = 'BufferLineCycleNext'
 
 map:register { as = 'cmd', modes = 'nicxsot' }
 ```
 
 ```lua
-(map "Accelerated j")
+;(map "Accelerated j")
     ['j'] = { plug = 'accelerated_jk_j', modes = 'n' }
-(map "Accelerated k")
+;(map "Accelerated k")
     ['k'] = { plug = 'accelerated_jk_k', modes = 'n' }
 
 map:register {}
@@ -55,14 +99,16 @@ use {
     config = function()
         local map_dsl = require('map-dsl')
         local which_key = require('which-key')
+
         -- configure these plugins here
     end
 }
 
 use {
-    'a/plugin',
+    'author/plugin',
     after = 'map', -- this is mandatory
     config = function()
+
         -- define keymappings here
     end
 }
