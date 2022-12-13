@@ -303,11 +303,6 @@ MapIndex.register = function(self, extra_arguments)
 
             -- common functionality
             local function register_key(mapping_or_mode_mapping_arguments)
-                -- call hook that allows to modify the key
-                if for_each_hook ~= nil then
-                    for_each_hook(key, mapping_or_mode_mapping_arguments)
-                end
-
                 -- map key in the current mode
                 require('which-key').register { [key] = mapping_or_mode_mapping_arguments }
             end
