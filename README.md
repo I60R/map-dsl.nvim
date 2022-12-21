@@ -115,4 +115,30 @@ use {
 
 ```
 
+Via [lazy.nvim](https://github.com/folke/lazy.nvim):
+
+```lua
+{
+    'I60R/map-dsl.nvim',
+    requires = 'folke/which-key.nvim',
+    config = function()
+        local map_dsl = require('map-dsl')
+        local which_key = require('which-key')
+
+        -- configure these plugins here
+    end
+},
+
+{
+    'author/plugin',
+    dependencies = 'I60R/map-dsl.nvim', -- this is mandatory
+    config = function()
+
+        -- define keymappings here
+    end
+},
+
+```
+
+
 
